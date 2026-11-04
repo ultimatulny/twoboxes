@@ -1,0 +1,8 @@
+.field {
+  background-color: antiquewhite;
+  position: relative;
+}
+
+.box {
+  position: absolute;
+}
