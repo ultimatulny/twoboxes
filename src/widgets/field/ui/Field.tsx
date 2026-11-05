@@ -1,5 +1,7 @@
 import styles from "./Field.module.css";
 import {
+  BASE_BOX_HEIGHT,
+  BASE_BOX_WIDTH,
   FIELD_HEIGHT_PX,
   FIELD_WIDTH_PX,
   type Box,
@@ -9,8 +11,22 @@ import { useCallback, useRef, useState } from "react";
 
 export const Field = () => {
   const [boxes, setBoxes] = useState<Box[]>([
-    { id: 1, width: 100, height: 100, x: 100, y: 100, color: "red" },
-    { id: 2, width: 100, height: 100, x: 500, y: 100, color: "green" },
+    {
+      id: 1,
+      width: BASE_BOX_WIDTH,
+      height: BASE_BOX_HEIGHT,
+      x: 100,
+      y: 100,
+      color: "red",
+    },
+    {
+      id: 2,
+      width: BASE_BOX_WIDTH,
+      height: BASE_BOX_HEIGHT,
+      x: 500,
+      y: 100,
+      color: "green",
+    },
   ]);
 
   const [selectedBoxId, setSelectedBoxId] = useState<number | null>(null);
@@ -23,8 +39,21 @@ export const Field = () => {
 
     const fieldRect = fieldRef.current.getBoundingClientRect();
 
-    const x = event.clientX - fieldRect.left - movingRef.current.localX;
-    const y = event.clientY - fieldRect.top - movingRef.current.localY;
+    const tryX = event.clientX - fieldRect.left - movingRef.current.localX;
+    const tryY = event.clientY - fieldRect.top - movingRef.current.localY;
+
+    const x =
+      tryX < 0
+        ? 0
+        : tryX > FIELD_WIDTH_PX - BASE_BOX_WIDTH
+          ? FIELD_WIDTH_PX - BASE_BOX_WIDTH
+          : tryX;
+    const y =
+      tryY < 0
+        ? 0
+        : tryY > FIELD_HEIGHT_PX - BASE_BOX_HEIGHT
+          ? FIELD_HEIGHT_PX - BASE_BOX_HEIGHT
+          : tryY;
 
     setBoxes((prev) =>
       prev.map((box) =>
