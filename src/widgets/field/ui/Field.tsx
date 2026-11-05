@@ -8,6 +8,8 @@ import {
   type movingBox,
 } from "../model";
 import { useCallback, useRef, useState } from "react";
+import { Menu } from "../../../entities/menu";
+import { COLORS } from "../../../shared/consts";
 
 export const Field = () => {
   const [boxes, setBoxes] = useState<Box[]>([
@@ -16,16 +18,16 @@ export const Field = () => {
       width: BASE_BOX_WIDTH,
       height: BASE_BOX_HEIGHT,
       x: 100,
-      y: 100,
-      color: "red",
+      y: 300,
+      colorId: "1",
     },
     {
       id: 2,
       width: BASE_BOX_WIDTH,
       height: BASE_BOX_HEIGHT,
       x: 500,
-      y: 100,
-      color: "green",
+      y: 300,
+      colorId: "2",
     },
   ]);
 
@@ -89,30 +91,42 @@ export const Field = () => {
     document.addEventListener("mouseup", handleMouseUp);
   };
 
+  const handleSelectColor = (colorId: string) => {
+    setBoxes((prev) =>
+      prev.map((box) => (box.id === selectedBoxId ? { ...box, colorId } : box)),
+    );
+  };
+
   return (
-    <div
-      className={styles.field}
-      style={{
-        width: FIELD_WIDTH_PX,
-        height: FIELD_HEIGHT_PX,
-      }}
-      ref={fieldRef}
-    >
-      {boxes.map((box) => (
-        <div
-          key={box.id}
-          className={styles.box}
-          style={{
-            width: box.width,
-            height: box.height,
-            left: box.x,
-            top: box.y,
-            backgroundColor: box.color,
-            border: selectedBoxId === box.id ? "2px dotted yellow" : undefined,
-          }}
-          onMouseDown={(event) => handleMouseDown(event, box.id)}
-        />
-      ))}
-    </div>
+    <>
+      <div
+        className={styles.field}
+        style={{
+          width: FIELD_WIDTH_PX,
+          height: FIELD_HEIGHT_PX,
+        }}
+        ref={fieldRef}
+      >
+        {boxes.map((box) => (
+          <div
+            key={box.id}
+            className={styles.box}
+            style={{
+              width: box.width,
+              height: box.height,
+              left: box.x,
+              top: box.y,
+              backgroundColor: COLORS[box.colorId].backgroundColor,
+              border:
+                selectedBoxId === box.id
+                  ? `2px dotted ${COLORS[box.colorId].borderColor}`
+                  : `2px solid ${COLORS[box.colorId].borderColor}`,
+            }}
+            onMouseDown={(event) => handleMouseDown(event, box.id)}
+          />
+        ))}
+        {selectedBoxId && <Menu handleSelectColor={handleSelectColor} />}
+      </div>
+    </>
   );
 };

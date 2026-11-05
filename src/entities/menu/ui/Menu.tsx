@@ -1,0 +1,29 @@
+import { COLORS } from "../../../shared/consts";
+import styles from "./Menu.module.css";
+
+console.log(Object.entries(COLORS));
+
+interface IProps {
+  handleSelectColor: (colorId: string) => void;
+}
+
+export const Menu = ({ handleSelectColor }: IProps) => {
+  return (
+    <div className={styles.menu}>
+      <h1>Выбери цвет</h1>
+      <div className={styles.colors}>
+        {Object.entries(COLORS).map((color) => (
+          <div
+            key={color[0]}
+            style={{
+              backgroundColor: color[1].backgroundColor,
+              border: `2px solid ${color[1].borderColor}`,
+            }}
+            className={styles.color}
+            onClick={() => handleSelectColor(color[0])}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};

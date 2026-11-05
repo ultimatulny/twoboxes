@@ -4,7 +4,7 @@ export interface Box {
   height: number;
   x: number;
   y: number;
-  color: string;
+  colorId: string;
 }
 
 export interface movingBox {
