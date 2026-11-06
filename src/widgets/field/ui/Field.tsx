@@ -33,37 +33,67 @@ export const Field = () => {
   ]);
 
   const [selectedBoxId, setSelectedBoxId] = useState<number | null>(null);
+  const [isMagnited, setIsMagnited] = useState(false);
 
   const fieldRef = useRef<HTMLDivElement>(null);
   const movingRef = useRef<movingBox | null>(null);
 
-  const handleMouseMove = useCallback((event: globalThis.MouseEvent) => {
-    if (!movingRef.current || !fieldRef.current) return;
+  const handleMouseMove = useCallback(
+    (event: globalThis.MouseEvent) => {
+      if (!movingRef.current || !fieldRef.current) return;
 
-    const fieldRect = fieldRef.current.getBoundingClientRect();
+      const fieldRect = fieldRef.current.getBoundingClientRect();
 
-    const tryX = event.clientX - fieldRect.left - movingRef.current.localX;
-    const tryY = event.clientY - fieldRect.top - movingRef.current.localY;
+      const tryX = event.clientX - fieldRect.left - movingRef.current.localX;
+      const tryY = event.clientY - fieldRect.top - movingRef.current.localY;
 
-    const x =
-      tryX < 0
-        ? 0
-        : tryX > FIELD_WIDTH_PX - BASE_BOX_WIDTH
-          ? FIELD_WIDTH_PX - BASE_BOX_WIDTH
-          : tryX;
-    const y =
-      tryY < 0
-        ? 0
-        : tryY > FIELD_HEIGHT_PX - BASE_BOX_HEIGHT
-          ? FIELD_HEIGHT_PX - BASE_BOX_HEIGHT
-          : tryY;
+      const newX =
+        tryX < 0
+          ? 0
+          : tryX > FIELD_WIDTH_PX - BASE_BOX_WIDTH
+            ? FIELD_WIDTH_PX - BASE_BOX_WIDTH
+            : tryX;
+      const newY =
+        tryY < 0
+          ? 0
+          : tryY > FIELD_HEIGHT_PX - BASE_BOX_HEIGHT
+            ? FIELD_HEIGHT_PX - BASE_BOX_HEIGHT
+            : tryY;
 
-    setBoxes((prev) =>
-      prev.map((box) =>
-        box.id === movingRef.current?.boxId ? { ...box, x, y } : box,
-      ),
-    );
-  }, []);
+      if (isMagnited) {
+        setBoxes((prev) => {
+          const secondBox = prev.find(
+            (box) => box.id !== movingRef.current?.boxId,
+          );
+          const selectedBox = prev.find(
+            (box) => box.id === movingRef.current?.boxId,
+          );
+
+          if (!secondBox || !selectedBox) {
+            return prev;
+          }
+
+          const diffX = newX - selectedBox.x;
+          const diffY = newY - selectedBox.y;
+
+          return prev.map((box) =>
+            box.id === movingRef.current?.boxId
+              ? { ...box, x: newX, y: newY }
+              : { ...box, x: box.x + diffX, y: box.y + diffY },
+          );
+        });
+      } else {
+        setBoxes((prev) =>
+          prev.map((box) =>
+            box.id === movingRef.current?.boxId
+              ? { ...box, x: newX, y: newY }
+              : box,
+          ),
+        );
+      }
+    },
+    [isMagnited],
+  );
 
   const handleMouseUp = useCallback(() => {
     movingRef.current = null;
@@ -127,6 +157,7 @@ export const Field = () => {
             : box,
         ),
       );
+      setIsMagnited(true);
       return;
     }
 
@@ -134,7 +165,7 @@ export const Field = () => {
     if (
       isIntersection(
         selectedBox.y,
-        secondBox.y + BASE_BOX_HEIGHT,
+        selectedBox.y + BASE_BOX_HEIGHT,
         secondBox.y,
         secondBox.y + BASE_BOX_HEIGHT,
       ) &&
@@ -148,6 +179,7 @@ export const Field = () => {
             : box,
         ),
       );
+      setIsMagnited(true);
       return;
     }
 
@@ -169,6 +201,7 @@ export const Field = () => {
             : box,
         ),
       );
+      setIsMagnited(true);
       return;
     }
 
@@ -176,7 +209,7 @@ export const Field = () => {
     if (
       isIntersection(
         selectedBox.y,
-        secondBox.y + BASE_BOX_HEIGHT,
+        selectedBox.y + BASE_BOX_HEIGHT,
         secondBox.y,
         secondBox.y + BASE_BOX_HEIGHT,
       ) &&
@@ -190,6 +223,7 @@ export const Field = () => {
             : box,
         ),
       );
+      setIsMagnited(true);
       return;
     }
   }, [boxes, selectedBoxId]);
@@ -222,7 +256,9 @@ export const Field = () => {
             onMouseDown={(event) => handleMouseDown(event, box.id)}
           />
         ))}
-        {selectedBoxId && <Menu handleSelectColor={handleSelectColor} />}
+        {selectedBoxId && (
+          <Menu handleSelectColor={handleSelectColor} isMagnited={isMagnited} />
+        )}
       </div>
     </>
   );

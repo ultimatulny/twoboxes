@@ -3,25 +3,29 @@ import styles from "./Menu.module.css";
 
 interface IProps {
   handleSelectColor: (colorId: string) => void;
+  isMagnited: boolean;
 }
 
-export const Menu = ({ handleSelectColor }: IProps) => {
+export const Menu = ({ handleSelectColor, isMagnited }: IProps) => {
   return (
-    <div className={styles.menu}>
-      <h1>Выбери цвет</h1>
-      <div className={styles.colors}>
-        {Object.entries(COLORS).map((color) => (
-          <div
-            key={color[0]}
-            style={{
-              backgroundColor: color[1].backgroundColor,
-              border: `2px solid ${color[1].borderColor}`,
-            }}
-            className={styles.color}
-            onClick={() => handleSelectColor(color[0])}
-          />
-        ))}
+    <>
+      <div className={styles.menu}>
+        <h1>Выбери цвет</h1>
+        <div className={styles.colors}>
+          {Object.entries(COLORS).map((color) => (
+            <div
+              key={color[0]}
+              style={{
+                backgroundColor: color[1].backgroundColor,
+                border: `2px solid ${color[1].borderColor}`,
+              }}
+              className={styles.color}
+              onClick={() => handleSelectColor(color[0])}
+            />
+          ))}
+        </div>
+        {isMagnited && <button className={styles.button}>Разъединить</button>}
       </div>
-    </div>
+    </>
   );
 };
