@@ -4,10 +4,11 @@ import {
   BASE_BOX_WIDTH,
   FIELD_HEIGHT_PX,
   FIELD_WIDTH_PX,
+  MAGNIT_LENGTH,
   type Box,
   type movingBox,
 } from "../model";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Menu } from "../../../entities/menu";
 import { COLORS } from "../../../shared/consts";
 
@@ -96,6 +97,102 @@ export const Field = () => {
       prev.map((box) => (box.id === selectedBoxId ? { ...box, colorId } : box)),
     );
   };
+
+  const isIntersection = (a: number, b: number, c: number, d: number) => {
+    return a <= d && c <= b;
+  };
+
+  // Проверка на прилипание
+  useEffect(() => {
+    const selectedBox = boxes.find((box) => box.id === selectedBoxId);
+    const secondBox = boxes.find((box) => box.id !== selectedBoxId);
+
+    if (!selectedBox || !secondBox) return;
+
+    // Верхняя грань выбранного с нижней второго
+    if (
+      isIntersection(
+        selectedBox.x,
+        selectedBox.x + BASE_BOX_WIDTH,
+        secondBox.x,
+        secondBox.x + BASE_BOX_WIDTH,
+      ) &&
+      secondBox.y + BASE_BOX_HEIGHT < selectedBox.y &&
+      selectedBox.y - (secondBox.y + BASE_BOX_HEIGHT) <= MAGNIT_LENGTH
+    ) {
+      setBoxes((prev) =>
+        prev.map((box) =>
+          box.id === selectedBoxId
+            ? { ...box, y: secondBox.y + BASE_BOX_HEIGHT }
+            : box,
+        ),
+      );
+      return;
+    }
+
+    // Правая грань выбранного с левой второго
+    if (
+      isIntersection(
+        selectedBox.y,
+        secondBox.y + BASE_BOX_HEIGHT,
+        secondBox.y,
+        secondBox.y + BASE_BOX_HEIGHT,
+      ) &&
+      secondBox.x > selectedBox.x + BASE_BOX_WIDTH &&
+      secondBox.x - (selectedBox.x + BASE_BOX_WIDTH) <= MAGNIT_LENGTH
+    ) {
+      setBoxes((prev) =>
+        prev.map((box) =>
+          box.id === selectedBoxId
+            ? { ...box, x: secondBox.x - BASE_BOX_WIDTH }
+            : box,
+        ),
+      );
+      return;
+    }
+
+    // Нижняя грань выбранного с верхней второго
+    if (
+      isIntersection(
+        selectedBox.x,
+        selectedBox.x + BASE_BOX_WIDTH,
+        secondBox.x,
+        secondBox.x + BASE_BOX_WIDTH,
+      ) &&
+      secondBox.y > selectedBox.y + BASE_BOX_HEIGHT &&
+      secondBox.y - (selectedBox.y + BASE_BOX_HEIGHT) <= MAGNIT_LENGTH
+    ) {
+      setBoxes((prev) =>
+        prev.map((box) =>
+          box.id === selectedBoxId
+            ? { ...box, y: secondBox.y - BASE_BOX_HEIGHT }
+            : box,
+        ),
+      );
+      return;
+    }
+
+    // Левая грань выбранного с правой второго
+    if (
+      isIntersection(
+        selectedBox.y,
+        secondBox.y + BASE_BOX_HEIGHT,
+        secondBox.y,
+        secondBox.y + BASE_BOX_HEIGHT,
+      ) &&
+      secondBox.x + BASE_BOX_WIDTH < selectedBox.x &&
+      selectedBox.x - (secondBox.x + BASE_BOX_WIDTH) <= MAGNIT_LENGTH
+    ) {
+      setBoxes((prev) =>
+        prev.map((box) =>
+          box.id === selectedBoxId
+            ? { ...box, x: secondBox.x + BASE_BOX_WIDTH }
+            : box,
+        ),
+      );
+      return;
+    }
+  }, [boxes, selectedBoxId]);
 
   return (
     <>
