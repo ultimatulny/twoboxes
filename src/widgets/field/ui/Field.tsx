@@ -62,25 +62,36 @@ export const Field = () => {
 
       if (isMagnited) {
         setBoxes((prev) => {
-          const secondBox = prev.find(
-            (box) => box.id !== movingRef.current?.boxId,
-          );
           const selectedBox = prev.find(
             (box) => box.id === movingRef.current?.boxId,
           );
 
-          if (!secondBox || !selectedBox) {
-            return prev;
-          }
+          if (!selectedBox) return prev;
+
+          const minX = Math.min(...prev.map((box) => box.x));
+          const maxX = Math.max(...prev.map((box) => box.x + box.width));
+
+          const minY = Math.min(...prev.map((box) => box.y));
+          const maxY = Math.max(...prev.map((box) => box.y + box.height));
 
           const diffX = newX - selectedBox.x;
           const diffY = newY - selectedBox.y;
 
-          return prev.map((box) =>
-            box.id === movingRef.current?.boxId
-              ? { ...box, x: newX, y: newY }
-              : { ...box, x: box.x + diffX, y: box.y + diffY },
+          const safeDiffX = Math.max(
+            -minX,
+            Math.min(diffX, FIELD_WIDTH_PX - maxX),
           );
+
+          const safeDiffY = Math.max(
+            -minY,
+            Math.min(diffY, FIELD_HEIGHT_PX - maxY),
+          );
+
+          return prev.map((box) => ({
+            ...box,
+            x: box.x + safeDiffX,
+            y: box.y + safeDiffY,
+          }));
         });
       } else {
         setBoxes((prev) =>
@@ -158,6 +169,7 @@ export const Field = () => {
         ),
       );
       setIsMagnited(true);
+      handleMouseUp();
       return;
     }
 
@@ -180,6 +192,7 @@ export const Field = () => {
         ),
       );
       setIsMagnited(true);
+      handleMouseUp();
       return;
     }
 
@@ -202,6 +215,7 @@ export const Field = () => {
         ),
       );
       setIsMagnited(true);
+      handleMouseUp();
       return;
     }
 
@@ -224,6 +238,7 @@ export const Field = () => {
         ),
       );
       setIsMagnited(true);
+      handleMouseUp();
       return;
     }
   }, [boxes, selectedBoxId]);
