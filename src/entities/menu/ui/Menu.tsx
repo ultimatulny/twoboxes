@@ -1,8 +1,6 @@
 import { COLORS } from "../../../shared/consts";
 import styles from "./Menu.module.css";
 
-console.log(Object.entries(COLORS));
-
 interface IProps {
   handleSelectColor: (colorId: string) => void;
 }
