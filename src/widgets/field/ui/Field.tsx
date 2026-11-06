@@ -166,6 +166,8 @@ export const Field = () => {
 
   // Проверка на прилипание
   useEffect(() => {
+    if (isMagnited) return;
+
     const selectedBox = boxes.find((box) => box.id === selectedBoxId);
     const secondBox = boxes.find((box) => box.id !== selectedBoxId);
 
