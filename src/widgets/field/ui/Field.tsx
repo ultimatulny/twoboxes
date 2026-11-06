@@ -11,6 +11,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Menu } from "../../../entities/menu";
 import { COLORS } from "../../../shared/consts";
+import { getRandomNumberInRange } from "../lib/getRandomNumberInRange";
 
 export const Field = () => {
   const [boxes, setBoxes] = useState<Box[]>([
@@ -143,6 +144,20 @@ export const Field = () => {
     return a <= d && c <= b;
   };
 
+  const handleDemagnetize = () => {
+    setSelectedBoxId(null);
+    setIsMagnited(false);
+
+    const newBoxes = boxes.map((box) => {
+      const x = getRandomNumberInRange(0, FIELD_WIDTH_PX - BASE_BOX_WIDTH);
+      const y = getRandomNumberInRange(0, FIELD_HEIGHT_PX - BASE_BOX_HEIGHT);
+
+      return { ...box, x, y };
+    });
+
+    setBoxes(newBoxes);
+  };
+
   // Проверка на прилипание
   useEffect(() => {
     const selectedBox = boxes.find((box) => box.id === selectedBoxId);
@@ -272,7 +287,11 @@ export const Field = () => {
           />
         ))}
         {selectedBoxId && (
-          <Menu handleSelectColor={handleSelectColor} isMagnited={isMagnited} />
+          <Menu
+            handleSelectColor={handleSelectColor}
+            isMagnited={isMagnited}
+            handleDemagnetize={handleDemagnetize}
+          />
         )}
       </div>
     </>

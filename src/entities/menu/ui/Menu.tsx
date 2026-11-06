@@ -4,9 +4,14 @@ import styles from "./Menu.module.css";
 interface IProps {
   handleSelectColor: (colorId: string) => void;
   isMagnited: boolean;
+  handleDemagnetize: () => void;
 }
 
-export const Menu = ({ handleSelectColor, isMagnited }: IProps) => {
+export const Menu = ({
+  handleSelectColor,
+  isMagnited,
+  handleDemagnetize,
+}: IProps) => {
   return (
     <>
       <div className={styles.menu}>
@@ -24,7 +29,11 @@ export const Menu = ({ handleSelectColor, isMagnited }: IProps) => {
             />
           ))}
         </div>
-        {isMagnited && <button className={styles.button}>Разъединить</button>}
+        {isMagnited && (
+          <button className={styles.button} onClick={handleDemagnetize}>
+            Разъединить
+          </button>
+        )}
       </div>
     </>
   );
