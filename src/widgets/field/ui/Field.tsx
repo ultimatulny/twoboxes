@@ -148,8 +148,14 @@ export const Field = () => {
     setSelectedBoxId(null);
     setIsMagnited(false);
 
-    const newBoxes = boxes.map((box) => {
-      const x = getRandomNumberInRange(0, FIELD_WIDTH_PX - BASE_BOX_WIDTH);
+    const newBoxes = boxes.map((box, index) => {
+      const x =
+        index === 0
+          ? getRandomNumberInRange(0, FIELD_WIDTH_PX / 2 - BASE_BOX_WIDTH)
+          : getRandomNumberInRange(
+              FIELD_WIDTH_PX / 2 + BASE_BOX_WIDTH,
+              FIELD_WIDTH_PX - BASE_BOX_WIDTH,
+            );
       const y = getRandomNumberInRange(0, FIELD_HEIGHT_PX - BASE_BOX_HEIGHT);
 
       return { ...box, x, y };
